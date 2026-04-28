@@ -92,6 +92,12 @@
 
                                         </div>
 
+                                        <div class="d-flex flex-column">
+
+                                            <span class="rating">Friends</span>
+                                            <span class="number3">{{ $user->friendsCount() }}</span>
+
+                                        </div>
 
                                         <div class="d-flex flex-column">
 
@@ -112,6 +118,48 @@
 
                 </div>
                 <hr>
+
+                {{-- Friends Section --}}
+                @if($friends->count() > 0)
+                <div class="row pt-4">
+                    <div class="col-md-12 d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="mb-0">Friends <span class="profile-friend-count">({{ $friends->count() }})</span></h4>
+                        @auth
+                            @if(Auth::id() === $user->id)
+                                <a href="{{ route('friendship.friends') }}" class="btn profile-friend-btn" style="font-size:13px;">See All Friends</a>
+                            @endif
+                        @endauth
+                    </div>
+                    @foreach($friends->take(6) as $friend)
+                    <div class="col-6 col-md-2 mb-3">
+                        <div class="friend-card text-center p-2">
+                            <a href="{{ route('profile', [$friend->id, $friend->name]) }}" class="text-decoration-none text-dark">
+                                <img src="{{ asset($friend->getAvatar()) }}" class="rounded friend-avatar mb-2" width="70" height="70" alt="{{ $friend->name }}">
+                                <p class="mb-1 friend-name">{{ Str::limit($friend->name, 14) }}</p>
+                            </a>
+                            @auth
+                                @php $myFriendship = Auth::user()->friendshipWith($friend->id); @endphp
+                                @if($myFriendship && $myFriendship->status === 'accepted')
+                                    <a href="{{ route('chat.index', $friend->id) }}" class="btn btn-sm profile-friend-btn message w-100" style="font-size:11px; padding:3px 6px;">
+                                        <i class="fas fa-comment"></i> Message
+                                    </a>
+                                @elseif(Auth::id() === $friend->id)
+                                    {{-- own card, no button --}}
+                                @elseif(!$myFriendship)
+                                    <form action="{{ route('friendship.send', $friend->id) }}" method="POST">
+                                        @csrf
+                                        <button class="btn btn-sm profile-friend-btn w-100" style="font-size:11px; padding:3px 6px;">
+                                            <i class="fas fa-user-plus"></i> Add
+                                        </button>
+                                    </form>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <hr>
+                @endif
 
                 <div class="row pt-4">
                     <div class="col-md-12">
@@ -191,4 +239,29 @@
             </div>
         </div>
     </section>
+
+<style>
+    .profile-friend-count { font-size: 16px; color: #aaa; font-weight: 400; }
+
+    .friend-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        transition: transform .2s;
+    }
+    .friend-card:hover { transform: translateY(-3px); }
+
+    .friend-avatar { object-fit: cover; border: 2px solid #f0d8dc; }
+
+    .friend-name {
+        font-size: 12px; font-weight: 600; color: #333;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .profile-friend-btn.message {
+        background: #fd8c99; color: #fff; border: none;
+        border-radius: 14px; font-size: 11px; padding: 3px 8px;
+    }
+    .profile-friend-btn.message:hover { background: #e07080; color: #fff; }
+</style>
 @endsection

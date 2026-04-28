@@ -125,6 +125,8 @@ class AccountController extends Controller
             })->first();
         }
 
+        $friends = $user->friends();
+
         return view('frontend.account.profile')->with([
             'site_name'       => 'Necrologi',
             'site_description' => __('app.sd_the_profile_of'),
@@ -132,6 +134,7 @@ class AccountController extends Controller
             'page_name'       => __('app.pn_the_profile_of', ['name' => $user->name]),
             'user'            => $user,
             'friendship'      => $friendship,
+            'friends'         => $friends,
             'pageTitle'       => $pageTitle,
         ]);
     }

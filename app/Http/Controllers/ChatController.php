@@ -78,6 +78,47 @@ class ChatController extends Controller
         return response()->json(['count' => $count]);
     }
 
+    public function conversationsPage()
+    {
+        $user = Auth::user();
+        $friends = $user->friends();
+
+        // Build conversation data for each friend who has messages
+        $convos = collect();
+        foreach ($friends as $friend) {
+            $lastMsg = \App\Models\ChatMessage::where(function ($q) use ($friend) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $friend->id);
+            })->orWhere(function ($q) use ($friend) {
+                $q->where('sender_id', $friend->id)->where('receiver_id', Auth::id());
+            })->orderByDesc('created_at')->first();
+
+            $unread = \App\Models\ChatMessage::where('sender_id', $friend->id)
+                ->where('receiver_id', Auth::id())
+                ->whereNull('read_at')
+                ->count();
+
+            $convos->push([
+                'user'       => $friend,
+                'last_msg'   => $lastMsg ? $lastMsg->body : null,
+                'updated_at' => $lastMsg ? $lastMsg->created_at : null,
+                'unread'     => $unread,
+            ]);
+        }
+
+        $convos = $convos->filter(fn($c) => $c['last_msg'] !== null)
+                         ->sortByDesc('updated_at')
+                         ->values();
+
+        return view('frontend.chat.conversations', [
+            'convos'           => $convos,
+            'friends'          => $friends,
+            'site_name'        => Setting::find('app_name')->value ?? 'Necrologi',
+            'page_name'        => 'Messages',
+            'site_description' => 'Your conversations',
+            'site_image'       => asset('img/avatar/no_avatar.jpg'),
+        ]);
+    }
+
     public function conversations()
     {
         // Latest message per conversation

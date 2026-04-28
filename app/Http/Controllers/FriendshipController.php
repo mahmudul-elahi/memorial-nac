@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Friendship;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -63,5 +64,35 @@ class FriendshipController extends Controller
         $friendship->delete();
 
         return back();
+    }
+
+    public function friends()
+    {
+        $user = Auth::user();
+        $friends = $user->friends();
+
+        return view('frontend.friendship.friends', [
+            'friends'     => $friends,
+            'site_name'   => Setting::find('app_name')->value ?? 'Necrologi',
+            'page_name'   => 'My Friends',
+            'site_description' => 'Your friends list',
+            'site_image'  => asset('img/avatar/no_avatar.jpg'),
+        ]);
+    }
+
+    public function requests()
+    {
+        $user = Auth::user();
+        $received = $user->pendingReceivedRequests();
+        $sent     = $user->pendingSentRequests();
+
+        return view('frontend.friendship.requests', [
+            'received'    => $received,
+            'sent'        => $sent,
+            'site_name'   => Setting::find('app_name')->value ?? 'Necrologi',
+            'page_name'   => 'Friend Requests',
+            'site_description' => 'Manage your friend requests',
+            'site_image'  => asset('img/avatar/no_avatar.jpg'),
+        ]);
     }
 }

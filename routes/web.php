@@ -94,12 +94,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/friendship/accept/{friendship}', [FriendshipController::class, 'accept'])->name('friendship.accept');
     Route::post('/friendship/decline/{friendship}', [FriendshipController::class, 'decline'])->name('friendship.decline');
     Route::post('/friendship/cancel/{friendship}', [FriendshipController::class, 'cancel'])->name('friendship.cancel');
+    Route::get('/friends', [FriendshipController::class, 'friends'])->name('friendship.friends');
+    Route::get('/friend-requests', [FriendshipController::class, 'requests'])->name('friendship.requests');
 
     // Chat
-    Route::get('/chat/{user}', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/conversations', [ChatController::class, 'conversationsPage'])->name('chat.conversations.page');
     Route::get('/chat/conversations/list', [ChatController::class, 'conversations'])->name('chat.conversations');
     Route::get('/chat/unread/count', [ChatController::class, 'unread'])->name('chat.unread');
+    Route::get('/chat/{user}', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store');
 });
 
 // Categorie

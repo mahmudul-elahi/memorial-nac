@@ -107,6 +107,31 @@ class User extends Authenticatable implements MustVerifyEmail
         })->first();
     }
 
+    public function friends()
+    {
+        $sentIds = Friendship::where('sender_id', $this->id)->where('status', 'accepted')->pluck('receiver_id');
+        $receivedIds = Friendship::where('receiver_id', $this->id)->where('status', 'accepted')->pluck('sender_id');
+        $friendIds = $sentIds->merge($receivedIds)->unique();
+        return User::whereIn('id', $friendIds)->get();
+    }
+
+    public function friendsCount(): int
+    {
+        $sent = Friendship::where('sender_id', $this->id)->where('status', 'accepted')->count();
+        $received = Friendship::where('receiver_id', $this->id)->where('status', 'accepted')->count();
+        return $sent + $received;
+    }
+
+    public function pendingReceivedRequests()
+    {
+        return Friendship::where('receiver_id', $this->id)->where('status', 'pending')->with('sender')->get();
+    }
+
+    public function pendingSentRequests()
+    {
+        return Friendship::where('sender_id', $this->id)->where('status', 'pending')->with('receiver')->get();
+    }
+
     public function unreadMessagesCount(): int
     {
         return ChatMessage::where('receiver_id', $this->id)->whereNull('read_at')->count();
