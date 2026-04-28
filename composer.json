@@ -15,6 +15,7 @@
         "muhaimenul/lara-search": "^1.0",
         "nesbot/carbon": "^2.48",
         "overtrue/laravel-like": "^4.0",
+        "pusher/pusher-php-server": "^7.2",
         "realrashid/sweet-alert": "^4.0",
         "spatie/laravel-permission": "^4.0",
         "stevebauman/purify": "^4.0"
