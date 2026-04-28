@@ -10,6 +10,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\InsertController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\FriendshipController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +88,18 @@ Route::group(['middleware' => ['auth']], function () {
     // Blog Comment
     Route::post('blog/comments/{post:slug}', [BlogController::class, 'store_comment'])->name('blog.comments.store');
     Route::post('blog/comments/destroy/{comment}', [BlogController::class, 'destroy_comment'])->name('blog.comments.destroy');
+
+    // Friendship
+    Route::post('/friendship/send/{user}', [FriendshipController::class, 'send'])->name('friendship.send');
+    Route::post('/friendship/accept/{friendship}', [FriendshipController::class, 'accept'])->name('friendship.accept');
+    Route::post('/friendship/decline/{friendship}', [FriendshipController::class, 'decline'])->name('friendship.decline');
+    Route::post('/friendship/cancel/{friendship}', [FriendshipController::class, 'cancel'])->name('friendship.cancel');
+
+    // Chat
+    Route::get('/chat/{user}', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/chat/conversations/list', [ChatController::class, 'conversations'])->name('chat.conversations');
+    Route::get('/chat/unread/count', [ChatController::class, 'unread'])->name('chat.unread');
 });
 
 // Categorie
