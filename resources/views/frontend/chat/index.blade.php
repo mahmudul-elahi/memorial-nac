@@ -245,7 +245,12 @@
         let pusherConnected = false;
         if (PUSHER_KEY) {
             try {
-                const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER, forceTLS: true });
+                const pusher = new Pusher(PUSHER_KEY, {
+                    cluster: PUSHER_CLUSTER,
+                    forceTLS: true,
+                    authEndpoint: '/broadcasting/auth',
+                    auth: { headers: { 'X-CSRF-TOKEN': CSRF } }
+                });
                 const channel = pusher.subscribe('private-' + CHANNEL);
 
                 pusher.connection.bind('connected', function() { pusherConnected = true; });
