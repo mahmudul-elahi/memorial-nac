@@ -1,0 +1,71 @@
+﻿/**/
+
+.insert-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: none;
+}
+
+.lead {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+/**/
+.starRating {
+    float:left;
+    font-family:arial
+}
+.starRating input {
+    display:none
+}
+
+.starRating label {
+    font-size:30px;
+    float:right;
+    color:#ddd
+}
+
+.starRating label:before {
+    content:'★'
+}
+
+.starRating input:checked~label {
+    color:#ffc107
+}
+
+.starRating:input:checked>label:hover,
+.starRating:input:checked>label:hover~label {
+    color:#ffc107
+}
+.starRating:not(:checked)>label:hover,
+.starRating:not(:checked)>label:hover~label {
+    color:#ffc107
+}
+
+.starRating .result:after {
+    left:0;
+    right:0;
+    font-size:20px;
+    color:#ffc107;
+    display:none
+}
+
+.starRating input:checked~.result:after {
+    display:block
+}
+
+@media (min-width: 768px) {
+    .navbar-brand-image {
+        height: 8rem !important;
+    }
+}
+
+.page-link {
+    font-size: 16px;
+    padding: 10px 25px;
+    border: 1px solid rgb(227, 227, 227);
+    border-radius: 0px;
+    border-collapse: collapse;
+}
