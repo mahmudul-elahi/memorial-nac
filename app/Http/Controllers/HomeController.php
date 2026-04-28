@@ -67,6 +67,16 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
+        $trending = Item::whereHas('category', function ($q) {
+                $q->where('status', 1);
+            })
+            ->where('status', 1)
+            ->withCount('likers')
+            ->having('likers_count', '>', 0)
+            ->orderByDesc('likers_count')
+            ->take(7)
+            ->get();
+
         $pageTitle = PageTitle::where('page_identifier', 'home')->first();
 
         $pageImage = PageImage::where('id', 5)->first();
@@ -79,6 +89,7 @@ class HomeController extends Controller
             'items' => $items,
             'posts' => $posts,
             'anniversaries' => $anniversaries,
+            'trending' => $trending,
             'pageTitle' => $pageTitle,
             'jumboStatus' => Setting::find('jumbotron')->value,
             'itemsForJumbo' => $itemsForJumbo,
