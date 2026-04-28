@@ -170,47 +170,57 @@
         }
     </style>
 
+    @if(config('broadcasting.connections.pusher.key'))
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    @endif
     <script>
         const ME = {{ Auth::id() }};
         const OTHER = {{ $otherUser->id }};
         const SEND_URL = "{{ route('chat.store', $otherUser->id) }}";
+        const POLL_URL = "{{ route('chat.poll', $otherUser->id) }}";
         const CSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const CHANNEL = "{{ $channelName }}";
-        const PUSHER_KEY = "{{ env('PUSHER_APP_KEY') }}";
-        const PUSHER_CLUSTER = "{{ env('PUSHER_APP_CLUSTER', 'mt1') }}";
+        const PUSHER_KEY = "{{ config('broadcasting.connections.pusher.key') }}";
+        const PUSHER_CLUSTER = "{{ config('broadcasting.connections.pusher.options.cluster', 'mt1') }}";
 
-        // Scroll to bottom
+        // Track the highest message id rendered so far for polling
+        let lastMsgId = 0;
+        document.querySelectorAll('.chat-bubble-row[data-id]').forEach(function(el) {
+            const id = parseInt(el.dataset.id);
+            if (id > lastMsgId) lastMsgId = id;
+        });
+
         function scrollBottom() {
             const body = document.getElementById('chatBody');
             body.scrollTop = body.scrollHeight;
         }
         scrollBottom();
 
-        // Render a bubble
         function appendBubble(msg, mine) {
+            // Avoid duplicate renders
+            if (document.querySelector('[data-id="' + msg.id + '"]')) return;
+            if (msg.id > lastMsgId) lastMsgId = msg.id;
+
             const row = document.createElement('div');
             row.className = 'chat-bubble-row ' + (mine ? 'mine' : 'theirs');
             row.dataset.id = msg.id;
 
             let avatarHtml = '';
             if (!mine) {
-                avatarHtml =
-                    `<img src="${msg.sender.avatar}" class="bubble-avatar rounded-circle" width="30" height="30" alt="">`;
+                avatarHtml = `<img src="${msg.sender.avatar}" class="bubble-avatar rounded-circle" width="30" height="30" alt="">`;
             }
 
-            row.innerHTML = `
-        ${avatarHtml}
-        <div class="chat-bubble">
-            <p>${escHtml(msg.body)}</p>
-            <span class="bubble-time">${msg.created_at}</span>
-        </div>`;
+            row.innerHTML = `${avatarHtml}
+            <div class="chat-bubble">
+                <p>${escHtml(msg.body)}</p>
+                <span class="bubble-time">${msg.created_at}</span>
+            </div>`;
             document.getElementById('chatBody').appendChild(row);
             scrollBottom();
         }
 
         function escHtml(str) {
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
         // Send message
@@ -222,33 +232,42 @@
             input.value = '';
 
             fetch(SEND_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': CSRF
-                    },
-                    body: JSON.stringify({
-                        body
-                    })
-                })
-                .then(r => r.json())
-                .then(msg => appendBubble(msg, true))
-                .catch(() => {});
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body: JSON.stringify({ body })
+            })
+            .then(r => r.json())
+            .then(msg => appendBubble(msg, true))
+            .catch(() => {});
         });
 
-        // Pusher real-time
+        // Pusher real-time (when credentials are configured)
+        let pusherConnected = false;
         if (PUSHER_KEY) {
-            const pusher = new Pusher(PUSHER_KEY, {
-                cluster: PUSHER_CLUSTER,
-                forceTLS: true
-            });
-            const channel = pusher.subscribe('private-' + CHANNEL);
+            try {
+                const pusher = new Pusher(PUSHER_KEY, { cluster: PUSHER_CLUSTER, forceTLS: true });
+                const channel = pusher.subscribe('private-' + CHANNEL);
 
-            channel.bind('App\\Events\\MessageSent', function(data) {
-                if (data.sender_id !== ME) {
-                    appendBubble(data, false);
-                }
-            });
+                pusher.connection.bind('connected', function() { pusherConnected = true; });
+                pusher.connection.bind('error', function() { pusherConnected = false; });
+
+                channel.bind('App\\Events\\MessageSent', function(data) {
+                    if (data.sender_id !== ME) appendBubble(data, false);
+                });
+            } catch(e) { pusherConnected = false; }
         }
+
+        // Polling fallback — runs every 3 s when Pusher is not connected
+        function poll() {
+            if (pusherConnected) return;
+            fetch(POLL_URL + '?after=' + lastMsgId, { headers: { 'X-CSRF-TOKEN': CSRF } })
+                .then(r => r.json())
+                .then(msgs => msgs.forEach(m => {
+                    if (m.sender_id !== ME) appendBubble(m, false);
+                    else if (m.id > lastMsgId) lastMsgId = m.id;
+                }))
+                .catch(() => {});
+        }
+        setInterval(poll, 3000);
     </script>
 @endsection

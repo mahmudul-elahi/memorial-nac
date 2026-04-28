@@ -69,6 +69,39 @@ class ChatController extends Controller
         ]);
     }
 
+    public function poll(Request $request, User $user)
+    {
+        $afterId = (int) $request->query('after', 0);
+
+        $messages = ChatMessage::where(function ($q) use ($user) {
+            $q->where('sender_id', Auth::id())->where('receiver_id', $user->id);
+        })->orWhere(function ($q) use ($user) {
+            $q->where('sender_id', $user->id)->where('receiver_id', Auth::id());
+        })->where('id', '>', $afterId)
+          ->orderBy('created_at')
+          ->with('sender')
+          ->get()
+          ->map(fn($m) => [
+              'id'         => $m->id,
+              'body'       => $m->body,
+              'sender_id'  => $m->sender_id,
+              'sender'     => [
+                  'id'     => $m->sender->id,
+                  'name'   => $m->sender->name,
+                  'avatar' => asset($m->sender->getAvatar()),
+              ],
+              'created_at' => $m->created_at->format('H:i'),
+          ]);
+
+        // Mark received as read
+        ChatMessage::where('sender_id', $user->id)
+            ->where('receiver_id', Auth::id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json($messages);
+    }
+
     public function unread()
     {
         $count = ChatMessage::where('receiver_id', Auth::id())

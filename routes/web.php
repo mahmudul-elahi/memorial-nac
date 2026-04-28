@@ -103,6 +103,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat/unread/count', [ChatController::class, 'unread'])->name('chat.unread');
     Route::get('/chat/{user}', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/{user}', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/chat/{user}/poll', [ChatController::class, 'poll'])->name('chat.poll');
 });
 
 // Categorie
