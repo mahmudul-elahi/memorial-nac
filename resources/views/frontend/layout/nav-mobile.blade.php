@@ -53,6 +53,13 @@
                             <li><a class="dropdown-item" href="{{ route('profile', [Auth::id(), Auth::user()->name]) }}"><i
                                         class="fas fa-user me-2"></i> Profile</a>
                             </li>
+                            <li><a class="dropdown-item" href="{{ route('friendship.friends') }}"><i
+                                        class="fas fa-user-friends me-2"></i> Friends</a></li>
+                            <li><a class="dropdown-item" href="{{ route('friendship.requests') }}"><i
+                                        class="fas fa-user-clock me-2"></i> Friend Requests</a></li>
+                            <li><a class="dropdown-item" href="{{ route('chat.conversations.page') }}"><i
+                                        class="fas fa-comments me-2"></i> Messages</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('account') }}"><i class="fas fa-cog me-2"></i>
                                     Account</a></li>
                             @hasrole('admin')
