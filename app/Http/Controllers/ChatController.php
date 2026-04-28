@@ -154,53 +154,44 @@ class ChatController extends Controller
 
     public function conversations()
     {
-        // Latest message per conversation
-        $sent = ChatMessage::where('sender_id', Auth::id())
-            ->with('receiver')
+        $authId = Auth::id();
+
+        // Get the latest message for each unique conversation partner
+        $messages = ChatMessage::where('sender_id', $authId)
+            ->orWhere('receiver_id', $authId)
             ->orderByDesc('created_at')
-            ->get()
-            ->keyBy('receiver_id');
+            ->with(['sender', 'receiver'])
+            ->get();
 
-        $received = ChatMessage::where('receiver_id', Auth::id())
-            ->with('sender')
-            ->orderByDesc('created_at')
-            ->get()
-            ->keyBy('sender_id');
+        $seen   = [];
+        $convos = [];
 
-        $convos = collect();
+        foreach ($messages as $msg) {
+            $partnerId = $msg->sender_id === $authId ? $msg->receiver_id : $msg->sender_id;
+            if (isset($seen[$partnerId])) continue;
+            $seen[$partnerId] = true;
 
-        foreach ($sent as $userId => $msg) {
-            $convos[$userId] = [
-                'user'       => $msg->receiver,
-                'last_msg'   => $msg->body,
-                'updated_at' => $msg->created_at,
-                'unread'     => 0,
-            ];
-        }
+            $partner = $msg->sender_id === $authId ? $msg->receiver : $msg->sender;
+            if (!$partner) continue;
 
-        foreach ($received as $userId => $msg) {
-            $unread = ChatMessage::where('sender_id', $userId)
-                ->where('receiver_id', Auth::id())
+            $unread = ChatMessage::where('sender_id', $partnerId)
+                ->where('receiver_id', $authId)
                 ->whereNull('read_at')
                 ->count();
 
-            if (isset($convos[$userId])) {
-                if ($msg->created_at > $convos[$userId]['updated_at']) {
-                    $convos[$userId]['last_msg']   = $msg->body;
-                    $convos[$userId]['updated_at'] = $msg->created_at;
-                }
-                $convos[$userId]['unread'] = $unread;
-            } else {
-                $convos[$userId] = [
-                    'user'       => $msg->sender,
-                    'last_msg'   => $msg->body,
-                    'updated_at' => $msg->created_at,
-                    'unread'     => $unread,
-                ];
-            }
-        }
+            $convos[] = [
+                'user' => [
+                    'id'         => $partner->id,
+                    'name'       => $partner->name,
+                    'avatar_url' => asset($partner->getAvatar()),
+                ],
+                'last_msg'   => $msg->body,
+                'updated_at' => $msg->created_at,
+                'unread'     => $unread,
+            ];
 
-        $convos = collect($convos)->sortByDesc('updated_at')->take(5)->values();
+            if (count($convos) === 10) break;
+        }
 
         return response()->json($convos);
     }

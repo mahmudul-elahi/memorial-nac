@@ -182,15 +182,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
                 list.innerHTML = convos.map(c => `
-                    <a href="/chat/${c.user.id}" class="msg-convo-item">
-                        <img src="${c.user.avatar_url || '/img/avatar/no_avatar.jpg'}" alt="">
-                        <div style="min-width:0;">
+                    <div class="msg-convo-item" onclick="window.location.href='/chat/${c.user.id}'" style="cursor:pointer;">
+                        <img src="${c.user.avatar_url || '/img/avatar/no_avatar.jpg'}" alt="${escHtml(c.user.name)}">
+                        <div style="min-width:0;flex:1;">
                             <div class="msg-convo-name">${escHtml(c.user.name)}</div>
                             <div class="msg-convo-preview">${escHtml(c.last_msg || '')}</div>
                         </div>
                         ${c.unread > 0 ? `<span class="msg-convo-unread">${c.unread}</span>` : ''}
-                    </a>`).join('')
-                    + `<a href="${CONVOS_PAGE}" class="d-block text-center py-2" style="font-size:12px;color:#fd8c99;border-top:1px solid #f0e8e0;">See all messages</a>`;
+                    </div>`).join('')
+                    + `<div onclick="window.location.href='${CONVOS_PAGE}'" class="d-block text-center py-2" style="font-size:12px;color:#fd8c99;border-top:1px solid #f0e8e0;cursor:pointer;">See all messages</div>`;
             })
             .catch(() => {
                 if (list) list.innerHTML = '<div class="px-3 py-3 text-muted" style="font-size:13px;">Could not load messages.</div>';
