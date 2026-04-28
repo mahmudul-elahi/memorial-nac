@@ -1686,6 +1686,42 @@ input:focus {
     white-space: normal;
 }
 
+.trending-likes {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fd8c99;
+}
+
+.btn-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border: 1.5px solid #fd8c99;
+    border-radius: 20px;
+    background: #fff;
+    color: #fd8c99;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-like:hover {
+    background: #fd8c99;
+    color: #fff;
+}
+
+.btn-like.liked {
+    background: #fd8c99;
+    color: #fff;
+}
+
+.btn-like.liked:hover {
+    background: #fff;
+    color: #fd8c99;
+}
+
 .blog-paragraph .paragraph span {
     display: block;
     margin-bottom: 25px;
