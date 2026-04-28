@@ -74,6 +74,30 @@
                             <div class="paragraph">
                                 {!! $item->description !!}
                             </div>
+
+                            <div class="like-section mt-3">
+                                @auth
+                                    <form action="{{ route('store.condolence', $item->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @if (Auth::user()->hasLiked($item))
+                                            <button type="submit" class="btn btn-like liked">
+                                                <i class="fas fa-heart"></i>
+                                                <span>{{ $item->likers()->count() }}</span>
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-like">
+                                                <i class="far fa-heart"></i>
+                                                <span>{{ $item->likers()->count() }}</span>
+                                            </button>
+                                        @endif
+                                    </form>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-like">
+                                        <i class="far fa-heart"></i>
+                                        <span>{{ $item->likers()->count() }}</span>
+                                    </a>
+                                @endauth
+                            </div>
                         </div>
 
                         @if ($item->images->count() > 2)
