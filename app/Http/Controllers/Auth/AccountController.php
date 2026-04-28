@@ -14,6 +14,7 @@ use App\Models\Item;
 use App\Models\Comment;
 use App\Models\Setting;
 use App\Models\PageTitle;
+use App\Models\Friendship;
 use Alert;
 
 class AccountController extends Controller
@@ -115,13 +116,23 @@ class AccountController extends Controller
 
         $user = User::findOrFail($id);
 
+        $friendship = null;
+        if (Auth::check() && Auth::id() !== $user->id) {
+            $friendship = Friendship::where(function ($q) use ($user) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $user->id);
+            })->orWhere(function ($q) use ($user) {
+                $q->where('sender_id', $user->id)->where('receiver_id', Auth::id());
+            })->first();
+        }
+
         return view('frontend.account.profile')->with([
-            'site_name' => 'Necrologi',
+            'site_name'       => 'Necrologi',
             'site_description' => __('app.sd_the_profile_of'),
-            'site_image' => asset('img/avatar/' . $user->id) . '/' . $user->avatar,
-            'page_name' => __('app.pn_the_profile_of', ['name' => $user->name]),
-            'user' => $user,
-            'pageTitle' => $pageTitle
+            'site_image'      => asset('img/avatar/' . $user->id) . '/' . $user->avatar,
+            'page_name'       => __('app.pn_the_profile_of', ['name' => $user->name]),
+            'user'            => $user,
+            'friendship'      => $friendship,
+            'pageTitle'       => $pageTitle,
         ]);
     }
 }
