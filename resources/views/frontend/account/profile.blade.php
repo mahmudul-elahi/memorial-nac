@@ -18,7 +18,69 @@
 
                                 <div class="ml-3 w-100">
 
-                                    <h4 class="mb-0 mt-0">{{ $user->name }}</h4>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <h4 class="mb-0 mt-0">{{ $user->name }}</h4>
+
+                                        @auth
+                                            @if (Auth::id() !== $user->id)
+
+                                                {{-- Friend button --}}
+                                                @if (!$friendship)
+                                                    <form action="{{ route('friendship.send', $user->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn" type="submit">
+                                                            <i class="fas fa-user-plus"></i> Add Friend
+                                                        </button>
+                                                    </form>
+
+                                                @elseif ($friendship->status === 'pending' && $friendship->sender_id === Auth::id())
+                                                    <form action="{{ route('friendship.cancel', $friendship->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn pending" type="submit">
+                                                            <i class="fas fa-clock"></i> Pending
+                                                        </button>
+                                                    </form>
+
+                                                @elseif ($friendship->status === 'pending' && $friendship->receiver_id === Auth::id())
+                                                    <form action="{{ route('friendship.accept', $friendship->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn accept" type="submit">
+                                                            <i class="fas fa-check"></i> Accept
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('friendship.decline', $friendship->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn decline" type="submit">
+                                                            <i class="fas fa-times"></i> Decline
+                                                        </button>
+                                                    </form>
+
+                                                @elseif ($friendship->status === 'accepted')
+                                                    <span class="profile-friend-btn friends">
+                                                        <i class="fas fa-user-check"></i> Friends
+                                                    </span>
+                                                    <a href="{{ route('chat.index', $user->id) }}" class="btn profile-friend-btn message">
+                                                        <i class="fas fa-comment"></i> Message
+                                                    </a>
+                                                    <form action="{{ route('friendship.cancel', $friendship->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn decline" type="submit">
+                                                            <i class="fas fa-user-minus"></i>
+                                                        </button>
+                                                    </form>
+
+                                                @elseif ($friendship->status === 'declined')
+                                                    <form action="{{ route('friendship.send', $user->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button class="btn profile-friend-btn" type="submit">
+                                                            <i class="fas fa-user-plus"></i> Add Friend
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                            @endif
+                                        @endauth
+                                    </div>
 
                                     <div
                                         class="p-2 mt-2 bg-primary d-flex justify-content-around  rounded text-white stats">

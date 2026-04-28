@@ -1686,6 +1686,25 @@ input:focus {
     white-space: normal;
 }
 
+/* Friend / message buttons on profile */
+.profile-friend-btn {
+    font-size: 12px; padding: 4px 12px;
+    border-radius: 20px; border: 1.5px solid #fd8c99;
+    color: #fd8c99; background: #fff;
+    cursor: pointer; transition: all .2s; line-height: 1.6;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+}
+.profile-friend-btn:hover { background: #fd8c99; color: #fff; }
+.profile-friend-btn.pending { border-color: #aaa; color: #aaa; }
+.profile-friend-btn.pending:hover { background: #aaa; color: #fff; }
+.profile-friend-btn.accept { border-color: #28a745; color: #28a745; }
+.profile-friend-btn.accept:hover { background: #28a745; color: #fff; }
+.profile-friend-btn.decline { border-color: #dc3545; color: #dc3545; }
+.profile-friend-btn.decline:hover { background: #dc3545; color: #fff; }
+.profile-friend-btn.friends { border-color: #28a745; color: #28a745; background: #f0fff4; }
+.profile-friend-btn.message { border-color: #fd8c99; color: #fd8c99; }
+.profile-friend-btn.message:hover { background: #fd8c99; color: #fff; }
+
 .trending-likes {
     font-size: 13px;
     font-weight: 600;

@@ -13,7 +13,12 @@
                             </div>
 
                             <div class="text">
-                                <h3>{{ $item->user->name }}</h3>
+                                <h3>
+                                    <a href="{{ route('profile', [$item->user->id, $item->user->name]) }}"
+                                        style="color: inherit; text-decoration: none;">
+                                        {{ $item->user->name }}
+                                    </a>
+                                </h3>
                                 <p>{{ $item->category->name }} <span style="font-size: 18px">
                                         @if ($item->details->sex == 'male')
                                             <i class="fas fa-mars" style="color: #ADD8E6"></i>
