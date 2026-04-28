@@ -73,6 +73,70 @@
     {{-- Anniversaries-Section-End --}}
 
 
+    {{-- Trending-Section-Start --}}
+
+    @if ($trending->isNotEmpty())
+        <section id="trending">
+            <div class="container">
+
+                <div class="row">
+                    <div class="col-md-7 mx-auto">
+                        <div class="anniversaries-text">
+                            <h3><i class="fas fa-fire" style="color:#fd8c99;"></i> Trending</h3>
+                            <p>Most loved memorials, ranked by hearts received.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mx-auto">
+                        <div class="slick-slider">
+                            @foreach ($trending as $item)
+                                <div class="col-md-4">
+                                    <div class="anniversarie-card">
+                                        <div class="card-image">
+                                            <a class="w-100 h-100"
+                                                href="{{ route('show.obituary', [$item->id, $item->slug]) }}">
+                                                <img src="{{ asset($item->getThumb()) }}" class="h-100 w-100"
+                                                    alt="card-image">
+                                            </a>
+                                        </div>
+                                        <div class="card-text">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <h6 class="aminal-name mb-0">{{ Str::limit($item->title, 10) }}</h6>
+                                                <span class="trending-likes">
+                                                    <i class="fas fa-heart" style="color:#fd8c99;"></i>
+                                                    {{ $item->likers_count }}
+                                                </span>
+                                            </div>
+
+                                            <div class="date d-flex">
+                                                <img style="width: 20px;"
+                                                    src="{{ asset('assets/frontend/images/grave.svg') }}" alt="">
+                                                <span>
+                                                    {{ Carbon\Carbon::create($item->details->death_date)->format('d M, Y') }}
+                                                </span>
+                                            </div>
+
+                                            <div class="d-grid">
+                                                <a href="{{ route('show.obituary', [$item->id, $item->slug]) }}"
+                                                    class="btn btn-primary" type="button">View Memorial</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    @endif
+
+    {{-- Trending-Section-End --}}
+
+
     {{--  Blogs-Section-Start --}}
 
     <section id="blogs">
