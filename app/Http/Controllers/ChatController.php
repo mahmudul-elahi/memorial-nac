@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
 use App\Models\ChatMessage;
-use App\Models\Friendship;
 use App\Models\User;
-use App\Models\PageTitle;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,11 +34,13 @@ class ChatController extends Controller
         $channelName = 'chat.' . $ids[0] . '.' . $ids[1];
 
         return view('frontend.chat.index', [
-            'otherUser'   => $user,
-            'messages'    => $messages,
-            'channelName' => $channelName,
-            'site_name'   => Setting::find('app_name')->value,
-            'page_name'   => 'Chat with ' . $user->name,
+            'otherUser'        => $user,
+            'messages'         => $messages,
+            'channelName'      => $channelName,
+            'site_name'        => Setting::find('app_name')->value ?? 'Necrologi',
+            'page_name'        => 'Chat with ' . $user->name,
+            'site_description' => 'Chat with ' . $user->name,
+            'site_image'       => asset($user->getAvatar()),
         ]);
     }
 
