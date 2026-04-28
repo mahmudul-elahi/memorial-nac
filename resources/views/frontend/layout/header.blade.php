@@ -186,7 +186,10 @@
     }
 
     updateBadge();
-    setInterval(updateBadge, 30000);
+    setInterval(updateBadge, 5000);
+
+    // Allow any page (e.g. chat) to trigger an instant badge refresh
+    window.addEventListener('chat:newMessage', updateBadge);
 
     document.getElementById('msgDropdownBtn')?.addEventListener('click', function () {
         loadConvos();

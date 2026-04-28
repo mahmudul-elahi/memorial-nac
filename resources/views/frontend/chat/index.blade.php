@@ -200,6 +200,7 @@
             // Avoid duplicate renders
             if (document.querySelector('[data-id="' + msg.id + '"]')) return;
             if (msg.id > lastMsgId) lastMsgId = msg.id;
+            if (!mine) window.dispatchEvent(new Event('chat:newMessage'));
 
             const row = document.createElement('div');
             row.className = 'chat-bubble-row ' + (mine ? 'mine' : 'theirs');
