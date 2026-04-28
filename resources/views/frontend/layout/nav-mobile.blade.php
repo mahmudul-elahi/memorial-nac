@@ -131,9 +131,10 @@
         </style>
 
         <script>
-        (function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const UNREAD_URL = "{{ route('chat.unread') }}";
             const CONVOS_URL = "{{ route('chat.conversations') }}";
+            const CONVOS_PAGE = "{{ route('chat.conversations.page') }}";
             const CSRF = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             function escHtml(str) {
@@ -156,12 +157,17 @@
             }
 
             function loadMobileConvos() {
+                const list = document.getElementById('msgConvoListMobile');
+                if (!list) return;
+                list.innerHTML = '<div class="px-3 py-3 text-muted" style="font-size:13px;">Loading…</div>';
+
                 fetch(CONVOS_URL, { headers: { 'X-CSRF-TOKEN': CSRF } })
-                    .then(r => r.json())
+                    .then(r => {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
                     .then(convos => {
-                        const list = document.getElementById('msgConvoListMobile');
-                        if (!list) return;
-                        if (!convos.length) {
+                        if (!Array.isArray(convos) || convos.length === 0) {
                             list.innerHTML = '<div class="px-3 py-3 text-muted" style="font-size:13px;">No conversations yet.</div>';
                             return;
                         }
@@ -170,22 +176,30 @@
                                 <img src="${c.user.avatar_url || '/img/avatar/no_avatar.jpg'}" alt="">
                                 <div style="min-width:0;">
                                     <div class="msg-convo-name">${escHtml(c.user.name)}</div>
-                                    <div class="msg-convo-preview">${escHtml(c.last_msg)}</div>
+                                    <div class="msg-convo-preview">${escHtml(c.last_msg || '')}</div>
                                 </div>
                                 ${c.unread > 0 ? `<span class="msg-convo-unread">${c.unread}</span>` : ''}
-                            </a>`).join('');
-                    }).catch(() => {});
+                            </a>`).join('')
+                            + `<a href="${CONVOS_PAGE}" class="d-block text-center py-2" style="font-size:12px;color:#fd8c99;border-top:1px solid #f0e8e0;">See all messages</a>`;
+                    })
+                    .catch(() => {
+                        if (list) list.innerHTML = '<div class="px-3 py-3 text-muted" style="font-size:13px;">Could not load messages.</div>';
+                    });
+            }
+
+            // Use Bootstrap's dropdown show event for reliable triggering
+            const msgDropdown = document.querySelector('#msgDropdownBtnMobile')?.closest('.dropdown');
+            if (msgDropdown) {
+                msgDropdown.addEventListener('show.bs.dropdown', function () {
+                    loadMobileConvos();
+                    updateMobileBadge();
+                });
             }
 
             updateMobileBadge();
             setInterval(updateMobileBadge, 5000);
             window.addEventListener('chat:newMessage', updateMobileBadge);
-
-            document.getElementById('msgDropdownBtnMobile')?.addEventListener('click', function () {
-                loadMobileConvos();
-                updateMobileBadge();
-            });
-        })();
+        });
         </script>
         @endauth
     </div>
