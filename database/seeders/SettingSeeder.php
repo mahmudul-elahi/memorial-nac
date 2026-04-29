@@ -12,6 +12,7 @@ class SettingSeeder extends Seeder
         $settings = [
             // General
             ['name' => 'app_name',             'value' => 'Memorial'],
+            ['name' => 'app_color',            'value' => '#fd8c99'],
             ['name' => 'app_description',      'value' => 'A compassionate platform to honor and remember loved ones.'],
             ['name' => 'app_tagline',          'value' => 'Honoring Lives, Preserving Memories'],
             ['name' => 'app_logo',             'value' => 'default_logo.png'],
