@@ -406,7 +406,6 @@ class AdminController extends Controller
             'category_id' => $request->category,
             'slug' => $this->make_slug($request->title),
             'status' => $request->status,
-            'terms' => 1
         ]);
 
         // if obituary has been created, save the present details
@@ -503,7 +502,6 @@ class AdminController extends Controller
             'category_id' => $request->category,
             'slug' => $this->make_slug($request->title),
             'status' => $request->status,
-            'terms' => 1
         ]);
 
         // Update details
