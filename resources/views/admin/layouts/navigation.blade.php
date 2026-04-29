@@ -5,8 +5,7 @@
         </button>
         <h1 class="navbar-brand">
             <a href="{{ url('admin') }}">
-                <img srcset="{{ asset('adm/img/logo/labNetwork_logo.png') }}" width="180px" height="40px"
-                    alt="" title="{{ __('.labNetwork') }}" class="navbar-brand-image">
+                <span style="color:#fff; font-size:1.3rem; font-weight:700; letter-spacing:.5px;">Nac Memorial</span>
             </a>
         </h1>
 
