@@ -15,7 +15,7 @@ class PageTitleController extends Controller
     {
         $pageTitles = PageTitle::paginate(5);
 
-        return view('admin.page_images.index')->with([
+        return view('admin.page_titles.index')->with([
             'site_name' => Setting::find('app_name')->value,
             'site_description' => Setting::find('app_tagline')->value,
             'page_name' => __('Page Titles'),
