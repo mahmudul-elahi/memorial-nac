@@ -66,7 +66,7 @@
                                         <div class="dropdown authenticated d-flex align-items-center">
                                             <button class="ms-3 authenticated-btn" type="button" data-bs-toggle="dropdown"
                                                 aria-expanded="false">
-                                                <img src="{{ asset(Auth::user()->getAvatar()) }}" alt="Profile">
+                                                <img src="{{ Auth::user()->avatar_url }}" alt="Profile" style="width:38px;height:38px;border-radius:50%;object-fit:cover;">
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item"
