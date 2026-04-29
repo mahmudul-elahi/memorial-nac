@@ -476,21 +476,23 @@ class AdminController extends Controller
 
             $item = Item::findOrFail($request->id);
 
-            // delete existing file
-            $currentImage = public_path('img/obituary/' . $item->id . '/' . $item->thumb->filename);
-
-            if (file_exists($currentImage)) {
-                File::delete($currentImage);
+            // delete existing file if one exists
+            if ($item->thumb) {
+                $currentImage = public_path('img/obituary/' . $item->id . '/' . $item->thumb->filename);
+                if (file_exists($currentImage)) {
+                    File::delete($currentImage);
+                }
             }
 
             $file = $request->file('image');
             $name = Str::random(35) . '.' . $file->extension();
             $file->move(public_path('img/obituary/' . $request->id), $name);
 
-            // update in db
-            Image::where('imageable_id', $request->id)->update([
-                'filename' => $name,
-            ]);
+            // update or create image record in db
+            Image::updateOrCreate(
+                ['imageable_id' => $request->id, 'imageable_type' => Item::class],
+                ['filename' => $name]
+            );
         }
         //
         //
