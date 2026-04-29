@@ -95,7 +95,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarUrlAttribute(): string
     {
-        return asset($this->getAvatar());
+        $path = $this->getAvatar();
+        if (file_exists(public_path($path))) {
+            return asset($path);
+        }
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&size=128&background=FBA8B2&color=fff&rounded=true';
     }
 
     public function friendshipWith(int $userId): ?Friendship

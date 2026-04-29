@@ -13,7 +13,7 @@
                             <div class="d-flex align-items-center gap-2">
 
                                 <div class="image">
-                                    <img src="{{ asset($user->getAvatar()) }}" class="rounded" width="100" height="100">
+                                    <img src="{{ $user->avatar_url }}" class="rounded" width="100" height="100" style="object-fit:cover;">
                                 </div>
 
                                 <div class="ml-3 w-100">

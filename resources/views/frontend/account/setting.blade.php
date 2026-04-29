@@ -45,8 +45,9 @@
 
                                                 <div class="row">
                                                     <div class="col-md-5 mb-4 mx-auto text-center">
-                                                        <img src="{{ asset(Auth::user()->getAvatar()) }}" alt=""
-                                                            style="height: 70px; width: 70px; border-radius: 50%;">
+                                                        <img src="{{ Auth::user()->avatar_url }}"
+                                                            alt="{{ Auth::user()->name }}"
+                                                            style="height: 70px; width: 70px; border-radius: 50%; object-fit: cover;">
                                                     </div>
                                                 </div>
 
