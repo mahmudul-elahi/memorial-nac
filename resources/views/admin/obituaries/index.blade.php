@@ -98,10 +98,14 @@
                                     </a>
                                 </td>
                                 <td>
+                                    @if($item->category)
                                     <a href="{{ route('admin.categories', '/#cat-' . $item->category->id) }}"
                                         class="font-weight-bold">
                                         {{ $item->category->name }}
                                     </a>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <em class="text-muted font-weight-bold">

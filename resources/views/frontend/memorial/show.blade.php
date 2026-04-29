@@ -19,7 +19,7 @@
                                         {{ $item->user->name }}
                                     </a>
                                 </h3>
-                                <p>{{ $item->category->name }} <span style="font-size: 18px">
+                                <p>{{ optional($item->category)->name }} <span style="font-size: 18px">
                                         @if ($item->details->sex == 'male')
                                             <i class="fas fa-mars" style="color: #ADD8E6"></i>
                                         @else

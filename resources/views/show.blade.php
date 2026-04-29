@@ -52,7 +52,7 @@
 
                                     <div class="text-muted mb-2">
                                         {{ $item->created_at->diffForHumans() }} &middot; <a
-                                            href="{{ route('category', [$item->category->id, $item->category->slug]) }}">{{ $item->category->name }}</a>
+                                            href="{{ $item->category ? route('category', [$item->category->id, $item->category->slug]) : '#' }}">{{ optional($item->category)->name ?? '—' }}</a>
                                         &middot; {{ __('app.' . $item->details->sex) }} &middot; <span
                                             class="text-reset"><svg xmlns="http://www.w3.org/2000/svg" class="icon"
                                                 width="24" height="24" viewBox="0 0 24 24" stroke-width="2"

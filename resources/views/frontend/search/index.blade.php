@@ -27,7 +27,7 @@
                                     <div class="card-text">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h6 class="aminal-name mb-0">{{ Str::limit($item->title, 10) }}</h6>
-                                            <p class="aminal-type mb-0">{{ $item->category->name }}</p>
+                                            <p class="aminal-type mb-0">{{ optional($item->category)->name }}</p>
                                         </div>
 
                                         <div class="date d-flex">

@@ -43,7 +43,7 @@
                                     <div class="card-text">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h6 class="aminal-name mb-0">{{ Str::limit($item->title, 10) }}</h6>
-                                            <p class="aminal-type mb-0">Rabbit</p>
+                                            <p class="aminal-type mb-0">{{ optional($item->category)->name }}</p>
                                         </div>
 
                                         <div class="date d-flex">
@@ -158,7 +158,8 @@
                             <div class="col-md-12 col-lg-4">
                                 <div class="blogs-card h-100">
                                     <div class="card-image">
-                                        <img src="{{ asset($post->getThumbnail()) }}" class="h-100 w-100" alt="card-image1">
+                                        <img src="{{ asset($post->getThumbnail()) }}" class="h-100 w-100"
+                                            alt="card-image1">
                                     </div>
 
                                     <div class="card-text">
@@ -219,12 +220,12 @@
                                     <div class="card-text">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h6 class="aminal-name mb-0">{{ Str::limit($item->title, 10) }}</h6>
-                                            <p class="aminal-type mb-0">Rabbit</p>
+                                            <p class="aminal-type mb-0">{{ optional($item->category)->name }}</p>
                                         </div>
 
                                         <div class="date d-flex">
-                                            <img style="width: 20px;" src="{{ asset('assets/frontend/images/grave.svg') }}"
-                                                alt="">
+                                            <img style="width: 20px;"
+                                                src="{{ asset('assets/frontend/images/grave.svg') }}" alt="">
                                             <span>
                                                 {{ Carbon\Carbon::create($item->details->death_date)->format('d M, Y') }}</span>
                                         </div>
