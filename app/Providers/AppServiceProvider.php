@@ -33,6 +33,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        try {
+            // Category list
+            View::share('categories', Category::with('subcategory')->whereNull('parent_id')->where('status', '1')->orderBy('id', 'ASC')->get());
+
+            View::share('condolences', Like::whereHas('item', function ($q) {
+                $q->where('status', 1);
+            })->orderByDesc('created_at')->take(5)->get());
+
+            View::share('latestComments', Comment::whereHas('itemsFilter', function ($q) {
+                $q->where('status', 1);
+            })->where('status', 1)->orderByDesc('created_at')->take(6)->get());
+
+            View::share('pages', Page::where('status', 1)->orderByDesc('id')->get());
+
+            View::share('settings', Setting::first());
+
+            View::share('socialLinks', SocialLink::all());
+        } catch (\Throwable $e) {
+            // Silently fail - DB may not be ready during setup
+        }
+
+        Carbon::setLocale(config('locale'));
 
         // Check if the user is authenticated
         if (Auth::check()) {
@@ -45,24 +67,6 @@ class AppServiceProvider extends ServiceProvider
                 return redirect()->route('login')->withErrors(['otp' => 'Please complete 2FA to continue.']);
             }
         }
-
-        // Category list
-        View::share('categories', Category::with('subcategory')->whereNull('parent_id')->where('status', '1')->orderBy('id', 'ASC')->get());
-
-        View::share('condolences', Like::whereHas('item', function ($q) {
-            $q->where('status', 1);
-        })->orderByDesc('created_at')->take(5)->get());
-
-        View::share('latestComments', Comment::whereHas('itemsFilter', function ($q) {
-            $q->where('status', 1);
-        })->where('status', 1)->orderByDesc('created_at')->take(6)->get());
-
-        View::share('pages', Page::where('status', 1)->orderByDesc('id')->get());
-
-        View::share('settings', Setting::first());
-        Carbon::setLocale(config('locale'));
-
-        View::share('socialLinks', SocialLink::all());
 
         // Pagination
         Paginator::useBootstrap();
